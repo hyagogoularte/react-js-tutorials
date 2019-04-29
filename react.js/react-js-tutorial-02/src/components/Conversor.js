@@ -5,16 +5,36 @@ export default class Conversor extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      moedaA_valor: '',
+      moedaB_valor: 0
+    };
+
+    this.converter =  this.converter.bind(this);
+  }
+
+  converter() {
+    let de_para = `${this.props.moedaA}_${this.props.moedaB}`;
+    let url = `http://free.currencyconverterapi.com/api/v5/convert?&compact=ultra&apiKey=bc8bdc9951e15057f602&q=${de_para}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(json => {
+        let cotacao = json[de_para];
+        let moedaB_valor = (parseFloat(this.state.moedaA_valor) * cotacao).toFixed(2);
+        this.setState({ moedaB_valor });
+      })
   }
 
   render() {
     return (
         <div className="conversor">
             <h2>{ this.props.moedaA } para { this.props.moedaB }</h2>
-            <input type="text"></input>
-            <button type="button">Converter</button>
+            <input type="text" onChange={(event) => { this.setState({ moedaA_valor: event.target.value }) }}></input>
+            <button type="button" onClick = { this.converter }>Converter</button>
 
-            <h2>Valor convertido</h2>
+            <h2>Valor convertido: { this.state.moedaB_valor }</h2>
         </div>
     )
   }
